@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Manage Users{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>👥 Manage Users</h1>
+  <p>View and manage all system users</p>
+</div>
+<div class="card">
+  <div class="card-header">
+    <h2>All Users ({{ users.count }})</h2>
+    <div class="filter-bar" style="margin:0;">
+      <form method="get" style="display:flex;gap:0.5rem;align-items:center;">
+        <select name="role" class="form-control" onchange="this.form.submit()">
+          <option value="">All Roles</option>
+          <option value="applicant" {% if role_filter == 'applicant' %}selected{% endif %}>Applicants</option>
+          <option value="reviewer" {% if role_filter == 'reviewer' %}selected{% endif %}>Reviewers</option>
+          <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Admins</option>
+        </select>
+      </form>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td style="color:var(--gray-500);">{{ u.id }}</td>
+          <td><strong>{{ u.get_full_name|default:'—' }}</strong></td>
+          <td>@{{ u.username }}</td>
+          <td style="color:var(--gray-500);font-size:0.85rem;">{{ u.email }}</td>
+          <td><span class="badge badge-{{ u.role }}">{{ u.get_role_display }}</span></td>
+          <td>
+            <span class="badge {% if u.is_active %}badge-active{% else %}badge-inactive{% endif %}">
+              {% if u.is_active %}Active{% else %}Inactive{% endif %}
+            </span>
+          </td>
+          <td style="color:var(--gray-500);font-size:0.85rem;">{{ u.created_at|date:"M d, Y" }}</td>
+          <td>
+            <a href="{% url 'edit_user' u.id %}" class="btn btn-outline btn-sm">Edit</a>
+            {% if u != request.user %}
+            <a href="{% url 'toggle_user_active' u.id %}" class="btn btn-sm {% if u.is_active %}btn-danger{% else %}btn-success{% endif %}"
+               onclick="return confirm('Toggle user status?')">
+              {% if u.is_active %}Deactivate{% else %}Activate{% endif %}
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">👤</div><h3>No users found</h3></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

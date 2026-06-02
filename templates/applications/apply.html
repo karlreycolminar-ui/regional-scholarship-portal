@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}Apply - {{ scholarship.title }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="breadcrumb"><a href="{% url 'scholarship_list' %}">Scholarships</a> / <a href="{% url 'scholarship_detail' scholarship.id %}">{{ scholarship.title }}</a> / Apply</div>
+  <h1>Apply for Scholarship</h1>
+  <p>{{ scholarship.title }}</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 280px;gap:1.5rem;align-items:start;">
+  <div class="card">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <h3 style="margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--gray-100);">Academic Information</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">School / University</label>
+          <input type="text" name="school_name" class="form-control" placeholder="e.g. Eastern Visayas State University" value="{{ form.school_name.value|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Year Level</label>
+          <input type="text" name="year_level" class="form-control" placeholder="e.g. 3rd Year" value="{{ form.year_level.value|default:'' }}">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Program / Course</label>
+          <input type="text" name="course" class="form-control" placeholder="e.g. BS Computer Science" value="{{ form.course.value|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">GPA / Grade Average</label>
+          <input type="number" name="gpa" class="form-control" step="0.01" min="1.00" max="4.00" placeholder="e.g. 3.75" value="{{ form.gpa.value|default:'' }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Personal Statement / Essay</label>
+        <textarea name="essay" class="form-control" rows="6" placeholder="Tell us about yourself, your achievements, and why you deserve this scholarship...">{{ form.essay.value|default:'' }}</textarea>
+      </div>
+
+      <h3 style="margin:1.5rem 0 1rem;padding-top:1rem;border-top:1px solid var(--gray-100);">Supporting Documents</h3>
+      <div id="doc-list">
+        <div class="doc-entry" style="display:grid;grid-template-columns:1fr 160px;gap:0.75rem;margin-bottom:0.75rem;">
+          <input type="file" name="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+          <select name="file_type" class="form-control">
+            <option value="transcript">Transcript</option>
+            <option value="id">Government ID</option>
+            <option value="recommendation">Recommendation</option>
+            <option value="income">Income Certificate</option>
+            <option value="birth_cert">Birth Certificate</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" onclick="addDoc()" class="btn btn-outline btn-sm" style="margin-bottom:1.5rem;">+ Add Another Document</button>
+
+      <div class="alert alert-info" style="font-size:0.82rem;">ℹ️ Accepted formats: PDF, JPEG, PNG. Maximum 10MB per file.</div>
+
+      <div style="display:flex;gap:0.75rem;margin-top:1rem;">
+        <button type="submit" class="btn btn-gold">Submit Application →</button>
+        <a href="{% url 'scholarship_detail' scholarship.id %}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="position:sticky;top:80px;">
+    <h3 style="margin-bottom:1rem;">Scholarship Details</h3>
+    <div style="display:flex;flex-direction:column;gap:0.6rem;font-size:0.875rem;">
+      {% if scholarship.amount %}
+      <div><span style="color:var(--gray-500);">Grant:</span> <strong>₱{{ scholarship.amount|floatformat:0 }}</strong></div>
+      {% endif %}
+      <div><span style="color:var(--gray-500);">Slots:</span> <strong>{{ scholarship.slots }}</strong></div>
+      <div><span style="color:var(--gray-500);">Deadline:</span> <strong>{{ scholarship.deadline|date:"M d, Y" }}</strong></div>
+      <div><span style="color:var(--gray-500);">Remaining:</span> <strong style="color:var(--warning);">{{ scholarship.days_remaining }} days</strong></div>
+    </div>
+    <hr style="margin:1rem 0;border-color:var(--gray-100);">
+    <h4 style="font-size:0.875rem;margin-bottom:0.5rem;">Eligibility</h4>
+    <p style="font-size:0.8rem;color:var(--gray-500);line-height:1.6;">{{ scholarship.eligibility_criteria|truncatechars:200 }}</p>
+  </div>
+</div>
+
+<script>
+function addDoc() {
+  const list = document.getElementById('doc-list');
+  const entry = document.createElement('div');
+  entry.className = 'doc-entry';
+  entry.style = 'display:grid;grid-template-columns:1fr 160px 36px;gap:0.75rem;margin-bottom:0.75rem;';
+  entry.innerHTML = `
+    <input type="file" name="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+    <select name="file_type" class="form-control">
+      <option value="transcript">Transcript</option>
+      <option value="id">Government ID</option>
+      <option value="recommendation">Recommendation</option>
+      <option value="income">Income Certificate</option>
+      <option value="birth_cert">Birth Certificate</option>
+      <option value="other">Other</option>
+    </select>
+    <button type="button" onclick="this.parentElement.remove()" class="btn btn-danger btn-sm" style="padding:0.35rem 0.6rem;">✕</button>
+  `;
+  list.appendChild(entry);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Review Applications{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>🔍 Review Applications</h1>
+  <p>Evaluate and decide on scholarship applications</p>
+</div>
+<div class="filter-bar">
+  <form method="get" style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+    <select name="status" class="form-control" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+      <option value="under_review" {% if status_filter == 'under_review' %}selected{% endif %}>Under Review</option>
+      <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+      <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+    </select>
+    <select name="scholarship" class="form-control" onchange="this.form.submit()">
+      <option value="">All Scholarships</option>
+      {% for s in scholarships %}
+      <option value="{{ s.id }}" {% if scholarship_filter == s.id|stringformat:"s" %}selected{% endif %}>{{ s.title|truncatechars:30 }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Applicant</th><th>Scholarship</th><th>GPA</th><th>Documents</th><th>Status</th><th>Submitted</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        {% for app in applications %}
+        <tr>
+          <td style="color:var(--gray-500);">{{ app.id }}</td>
+          <td>
+            <strong>{{ app.user.get_full_name|default:app.user.username }}</strong>
+            <div style="font-size:0.78rem;color:var(--gray-500);">{{ app.user.email }}</div>
+          </td>
+          <td style="font-size:0.85rem;">{{ app.scholarship.title|truncatechars:30 }}</td>
+          <td>{{ app.gpa|default:'—' }}</td>
+          <td style="text-align:center;">{{ app.documents.count }}</td>
+          <td><span class="badge badge-{{ app.status }}">{{ app.get_status_display }}</span></td>
+          <td style="font-size:0.82rem;color:var(--gray-500);">{{ app.date_submitted|date:"M d, Y" }}</td>
+          <td>
+            <a href="{% url 'application_detail' app.id %}" class="btn btn-outline btn-sm">View</a>
+            <a href="{% url 'review_application' app.id %}" class="btn btn-primary btn-sm">Review</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">
+          <div class="empty-state">
+            <div class="empty-icon">✅</div>
+            <h3>No applications found</h3>
+            <p>Try adjusting your filters.</p>
+          </div>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>🛠️ Admin Dashboard</h1>
+  <p>System overview and management</p>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card blue">
+    <div class="stat-label">Total Users</div>
+    <div class="stat-value">{{ total_users }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Scholarships</div>
+    <div class="stat-value">{{ total_scholarships }}</div>
+  </div>
+  <div class="stat-card blue">
+    <div class="stat-label">Total Applications</div>
+    <div class="stat-value">{{ total_applications }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Pending Review</div>
+    <div class="stat-value">{{ pending_apps }}</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-label">Approved</div>
+    <div class="stat-value">{{ approved_apps }}</div>
+  </div>
+  <div class="stat-card red">
+    <div class="stat-label">Rejected</div>
+    <div class="stat-value">{{ rejected_apps }}</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+  <div class="card">
+    <div class="card-header">
+      <h2>📝 Recent Applications</h2>
+      <a href="{% url 'review_list' %}" class="btn btn-outline btn-sm">View All</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Applicant</th><th>Scholarship</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for app in recent_applications %}
+          <tr>
+            <td>{{ app.user.get_full_name|default:app.user.username }}</td>
+            <td style="font-size:0.82rem;">{{ app.scholarship.title|truncatechars:30 }}</td>
+            <td><span class="badge badge-{{ app.status }}">{{ app.get_status_display }}</span></td>
+            <td style="font-size:0.82rem;color:var(--gray-500);">{{ app.date_submitted|date:"M d" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" style="text-align:center;color:var(--gray-500);padding:1.5rem;">No applications yet</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>📋 Recent Activity</h2>
+      <a href="{% url 'audit_logs' %}" class="btn btn-outline btn-sm">View All</a>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      {% for log in recent_logs %}
+      <div style="display:flex;gap:0.75rem;align-items:flex-start;padding:0.6rem;border-radius:8px;background:var(--gray-50);">
+        <div style="font-size:1.1rem;margin-top:0.1rem;">
+          {% if 'LOGIN' in log.action_type %}🔑
+          {% elif 'APPLICATION' in log.action_type %}📝
+          {% elif 'SCHOLARSHIP' in log.action_type %}🎓
+          {% elif 'USER' in log.action_type %}👤
+          {% else %}📌{% endif %}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:0.82rem;font-weight:600;color:var(--navy);">{{ log.action_type|lower|title }}</div>
+          <div style="font-size:0.78rem;color:var(--gray-500);">{{ log.description|truncatechars:60 }}</div>
+          <div style="font-size:0.72rem;color:var(--gray-500);margin-top:0.2rem;">{{ log.timestamp|date:"M d, H:i" }}</div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state"><div class="empty-icon">📋</div><p>No activity yet</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div style="display:flex;gap:1rem;margin-top:1.5rem;flex-wrap:wrap;">
+  <a href="{% url 'scholarship_create' %}" class="btn btn-gold">➕ New Scholarship</a>
+  <a href="{% url 'manage_users' %}" class="btn btn-primary">👥 Manage Users</a>
+  <a href="{% url 'review_list' %}" class="btn btn-outline">🔍 Review Applications</a>
+  <a href="{% url 'audit_logs' %}" class="btn btn-outline">📋 Audit Logs</a>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Audit Logs{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>📋 Audit Logs</h1>
+  <p>Track all system activity for compliance and security</p>
+</div>
+<div class="filter-bar">
+  <form method="get" style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+    <input type="text" name="user" class="form-control" placeholder="Filter by username..." value="{{ user_filter }}" style="width:180px;">
+    <select name="action" class="form-control">
+      <option value="">All Actions</option>
+      {% for val, label in action_choices %}
+      <option value="{{ val }}" {% if action_filter == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+    {% if action_filter or user_filter %}<a href="{% url 'audit_logs' %}" class="btn btn-outline btn-sm">Clear</a>{% endif %}
+  </form>
+</div>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Timestamp</th><th>User</th><th>Action</th><th>Description</th><th>IP Address</th></tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td style="font-size:0.82rem;color:var(--gray-500);white-space:nowrap;">{{ log.timestamp|date:"M d, Y H:i:s" }}</td>
+          <td>
+            {% if log.user %}
+            <span style="font-weight:600;">{{ log.user.username }}</span>
+            <span class="badge badge-{{ log.user.role }}" style="font-size:0.65rem;margin-left:0.3rem;">{{ log.user.role }}</span>
+            {% else %}—{% endif %}
+          </td>
+          <td>
+            <span style="font-size:0.78rem;font-weight:600;padding:0.2rem 0.5rem;border-radius:4px;background:var(--navy);color:white;letter-spacing:0.03em;">{{ log.action_type }}</span>
+          </td>
+          <td style="font-size:0.85rem;color:var(--gray-700);">{{ log.description }}</td>
+          <td style="font-size:0.82rem;color:var(--gray-500);">{{ log.ip_address|default:'—' }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>No logs found</h3>
+          </div>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

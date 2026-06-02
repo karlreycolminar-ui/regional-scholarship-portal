@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}{{ scholarship.title }}{% endblock %}
+{% block content %}
+<div class="breadcrumb" style="margin-bottom:1rem;"><a href="{% url 'scholarship_list' %}">Scholarships</a> / {{ scholarship.title }}</div>
+<div style="display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start;">
+  <div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <span class="badge badge-applicant">{{ scholarship.get_category_display }}</span>
+        <span class="badge {% if scholarship.is_open %}badge-approved{% else %}badge-rejected{% endif %}">
+          {% if scholarship.is_open %}Open{% else %}Closed{% endif %}
+        </span>
+      </div>
+      <h1 style="font-size:1.7rem;margin-bottom:0.5rem;">{{ scholarship.title }}</h1>
+      <p style="color:var(--gray-500);font-size:0.85rem;margin-bottom:1.5rem;">
+        Posted by {{ scholarship.created_by.get_full_name|default:"Admin" }} • {{ scholarship.created_at|date:"M d, Y" }}
+      </p>
+      <hr style="border-color:var(--gray-100);margin-bottom:1.5rem;">
+      <h3 style="margin-bottom:0.75rem;">About this Scholarship</h3>
+      <p style="color:var(--gray-700);line-height:1.7;margin-bottom:1.5rem;">{{ scholarship.description }}</p>
+      <h3 style="margin-bottom:0.75rem;">Eligibility Criteria</h3>
+      <p style="color:var(--gray-700);line-height:1.7;white-space:pre-line;">{{ scholarship.eligibility_criteria }}</p>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:1rem;">
+    <div class="card">
+      <h3 style="margin-bottom:1rem;">Quick Info</h3>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        {% if scholarship.amount %}
+        <div style="display:flex;justify-content:space-between;font-size:0.875rem;">
+          <span style="color:var(--gray-500);">Grant Amount</span>
+          <strong>₱{{ scholarship.amount|floatformat:0 }}</strong>
+        </div>
+        {% endif %}
+        <div style="display:flex;justify-content:space-between;font-size:0.875rem;">
+          <span style="color:var(--gray-500);">Available Slots</span>
+          <strong>{{ scholarship.slots }}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.875rem;">
+          <span style="color:var(--gray-500);">Deadline</span>
+          <strong>{{ scholarship.deadline|date:"M d, Y" }}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.875rem;">
+          <span style="color:var(--gray-500);">Days Remaining</span>
+          <strong style="color:{% if scholarship.days_remaining > 7 %}var(--success){% elif scholarship.days_remaining > 0 %}var(--warning){% else %}var(--danger){% endif %};">
+            {{ scholarship.days_remaining }} days
+          </strong>
+        </div>
+      </div>
+    </div>
+
+    {% if user.is_applicant %}
+    <div class="card">
+      {% if already_applied %}
+      <div class="alert alert-success">✅ You have already applied for this scholarship.</div>
+      <a href="{% url 'my_applications' %}" class="btn btn-outline" style="width:100%;justify-content:center;">View My Application</a>
+      {% elif scholarship.is_open %}
+      <a href="{% url 'apply' scholarship.id %}" class="btn btn-gold" style="width:100%;justify-content:center;padding:0.75rem;">Apply Now →</a>
+      {% else %}
+      <div class="alert alert-warning">⚠️ This scholarship is no longer accepting applications.</div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if user.is_admin %}
+    <div class="card">
+      <a href="{% url 'scholarship_edit' scholarship.id %}" class="btn btn-primary" style="width:100%;justify-content:center;margin-bottom:0.5rem;">Edit Scholarship</a>
+      <a href="{% url 'scholarship_delete' scholarship.id %}" class="btn btn-danger" style="width:100%;justify-content:center;">Delete</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

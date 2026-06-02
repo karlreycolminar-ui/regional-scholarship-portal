@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}My Applications{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>📝 My Applications</h1>
+  <p>Track the status of your scholarship applications</p>
+</div>
+<div class="filter-bar">
+  <form method="get" style="display:flex;gap:0.5rem;align-items:center;">
+    <select name="status" class="form-control" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+      <option value="under_review" {% if status_filter == 'under_review' %}selected{% endif %}>Under Review</option>
+      <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+      <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+    </select>
+  </form>
+  <a href="{% url 'scholarship_list' %}" class="btn btn-gold" style="margin-left:auto;">Browse Scholarships</a>
+</div>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Scholarship</th><th>Category</th><th>GPA</th><th>Status</th><th>Submitted</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for app in applications %}
+        <tr>
+          <td>
+            <strong>{{ app.scholarship.title }}</strong>
+            <div style="font-size:0.78rem;color:var(--gray-500);">{{ app.school_name|default:'—' }}</div>
+          </td>
+          <td style="font-size:0.85rem;">{{ app.scholarship.get_category_display }}</td>
+          <td>{{ app.gpa|default:'—' }}</td>
+          <td><span class="badge badge-{{ app.status }}">{{ app.get_status_display }}</span></td>
+          <td style="font-size:0.85rem;color:var(--gray-500);">{{ app.date_submitted|date:"M d, Y" }}</td>
+          <td>
+            <a href="{% url 'application_detail' app.id %}" class="btn btn-outline btn-sm">View</a>
+            {% if app.status == 'pending' %}
+            <a href="{% url 'application_withdraw' app.id %}" class="btn btn-danger btn-sm"
+               onclick="return confirm('Withdraw this application?')">Withdraw</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>No applications yet</h3>
+            <p>You haven't applied for any scholarships.</p>
+            <a href="{% url 'scholarship_list' %}" class="btn btn-gold" style="margin-top:1rem;">Browse Scholarships</a>
+          </div>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

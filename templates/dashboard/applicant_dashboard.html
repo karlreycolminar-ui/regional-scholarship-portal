@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>👋 Welcome, {{ user.first_name|default:user.username }}!</h1>
+  <p>Here's an overview of your scholarship applications.</p>
+</div>
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-label">Pending</div>
+    <div class="stat-value">{{ pending_count }}</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-label">Approved</div>
+    <div class="stat-value">{{ approved_count }}</div>
+  </div>
+  <div class="stat-card red">
+    <div class="stat-label">Rejected</div>
+    <div class="stat-value">{{ rejected_count }}</div>
+  </div>
+  <div class="stat-card blue">
+    <div class="stat-label">Total Applied</div>
+    <div class="stat-value">{{ my_applications.count }}</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+  <div class="card">
+    <div class="card-header">
+      <h2>📝 My Applications</h2>
+      <a href="{% url 'my_applications' %}" class="btn btn-outline btn-sm">View All</a>
+    </div>
+    {% if my_applications %}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Scholarship</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for app in my_applications|slice:":5" %}
+          <tr>
+            <td>
+              <a href="{% url 'application_detail' app.id %}" style="color:var(--navy);text-decoration:none;font-weight:500;">
+                {{ app.scholarship.title|truncatechars:35 }}
+              </a>
+            </td>
+            <td><span class="badge badge-{{ app.status }}">{{ app.get_status_display }}</span></td>
+            <td style="font-size:0.82rem;color:var(--gray-500);">{{ app.date_submitted|date:"M d" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No applications yet</h3>
+      <p>Browse available scholarships and apply!</p>
+      <a href="{% url 'scholarship_list' %}" class="btn btn-gold" style="margin-top:1rem;">Browse Scholarships</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>🎓 Open Scholarships</h2>
+      <a href="{% url 'scholarship_list' %}" class="btn btn-outline btn-sm">View All</a>
+    </div>
+    {% for s in available_scholarships %}
+    <div style="padding:0.85rem;border-radius:8px;border:1px solid var(--gray-100);margin-bottom:0.75rem;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <a href="{% url 'scholarship_detail' s.id %}" style="font-weight:600;color:var(--navy);text-decoration:none;font-size:0.9rem;">{{ s.title }}</a>
+          <div style="font-size:0.78rem;color:var(--gray-500);margin-top:0.2rem;">
+            {% if s.amount %}₱{{ s.amount|floatformat:0 }} • {% endif %}{{ s.days_remaining }} days left
+          </div>
+        </div>
+        <a href="{% url 'apply' s.id %}" class="btn btn-gold btn-sm">Apply</a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state"><div class="empty-icon">🎓</div><p>No open scholarships right now.</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

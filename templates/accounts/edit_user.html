@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Edit User{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="breadcrumb"><a href="{% url 'manage_users' %}">Users</a> / Edit User</div>
+  <h1>Edit User: {{ target_user.username }}</h1>
+</div>
+<div class="card" style="max-width:560px;">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">First Name</label>
+        <input type="text" name="first_name" class="form-control" value="{{ form.first_name.value|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last Name</label>
+        <input type="text" name="last_name" class="form-control" value="{{ form.last_name.value|default:'' }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" name="email" class="form-control" value="{{ form.email.value|default:'' }}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Phone</label>
+      <input type="text" name="phone" class="form-control" value="{{ form.phone.value|default:'' }}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Role</label>
+      <select name="role" class="form-control">
+        <option value="applicant" {% if form.role.value == 'applicant' %}selected{% endif %}>Applicant</option>
+        <option value="reviewer" {% if form.role.value == 'reviewer' %}selected{% endif %}>Reviewer</option>
+        <option value="admin" {% if form.role.value == 'admin' %}selected{% endif %}>Administrator</option>
+      </select>
+    </div>
+    <div class="form-group" style="display:flex;gap:1rem;">
+      <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.875rem;cursor:pointer;">
+        <input type="checkbox" name="is_active" {% if form.is_active.value %}checked{% endif %}> Active
+      </label>
+      <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.875rem;cursor:pointer;">
+        <input type="checkbox" name="is_verified" {% if form.is_verified.value %}checked{% endif %}> Verified
+      </label>
+    </div>
+    <div style="display:flex;gap:0.75rem;">
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+      <a href="{% url 'manage_users' %}" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

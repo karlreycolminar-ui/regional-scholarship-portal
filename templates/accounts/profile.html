@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>My Profile</h1>
+  <p>Manage your personal information</p>
+</div>
+<div style="display:grid;grid-template-columns:240px 1fr;gap:1.5rem;max-width:860px;">
+  <div class="card" style="text-align:center;height:fit-content;">
+    <div style="width:80px;height:80px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;color:var(--gold);">
+      {{ user.first_name.0|upper }}{{ user.last_name.0|upper }}
+    </div>
+    <h3 style="font-size:1.1rem;">{{ user.get_full_name }}</h3>
+    <p style="color:var(--gray-500);font-size:0.85rem;">@{{ user.username }}</p>
+    <span class="badge badge-{{ user.role }}" style="margin-top:0.5rem;">{{ user.get_role_display }}</span>
+    <hr style="margin:1rem 0;border-color:var(--gray-100);">
+    <p style="font-size:0.8rem;color:var(--gray-500);">Member since<br><strong>{{ user.date_joined|date:"M d, Y" }}</strong></p>
+  </div>
+  <div class="card">
+    <div class="card-header"><h2>Edit Profile</h2></div>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" name="first_name" class="form-control" value="{{ form.first_name.value|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" name="last_name" class="form-control" value="{{ form.last_name.value|default:'' }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" value="{{ form.email.value|default:'' }}">
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input type="text" name="phone" class="form-control" value="{{ form.phone.value|default:'' }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date of Birth</label>
+          <input type="date" name="date_of_birth" class="form-control" value="{{ form.date_of_birth.value|default:'' }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address</label>
+        <textarea name="address" class="form-control" rows="2">{{ form.address.value|default:'' }}</textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

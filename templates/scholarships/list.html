@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Scholarships{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>🎓 Available Scholarships</h1>
+  <p>Browse and apply for scholarships</p>
+</div>
+
+<div class="filter-bar">
+  <form method="get" style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+    <input type="text" name="q" class="form-control" placeholder="Search scholarships..." value="{{ search }}" style="width:220px;">
+    <select name="category" class="form-control" onchange="this.form.submit()">
+      <option value="">All Categories</option>
+      {% for val, label in categories %}
+      <option value="{{ val }}" {% if category == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+    {% if search or category %}<a href="{% url 'scholarship_list' %}" class="btn btn-outline btn-sm">Clear</a>{% endif %}
+  </form>
+  {% if user.is_admin %}
+  <a href="{% url 'scholarship_create' %}" class="btn btn-gold" style="margin-left:auto;">➕ Add Scholarship</a>
+  {% endif %}
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;">
+  {% for s in scholarships %}
+  <div class="card" style="display:flex;flex-direction:column;gap:0.75rem;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <span class="badge badge-applicant" style="font-size:0.7rem;">{{ s.get_category_display }}</span>
+      <span class="badge {% if s.is_open %}badge-approved{% else %}badge-rejected{% endif %}">
+        {% if s.is_open %}Open{% else %}Closed{% endif %}
+      </span>
+    </div>
+    <h3 style="font-size:1.05rem;">{{ s.title }}</h3>
+    <p style="color:var(--gray-500);font-size:0.85rem;flex:1;">{{ s.description|truncatechars:100 }}</p>
+    <div style="display:flex;gap:1rem;font-size:0.82rem;color:var(--gray-500);">
+      {% if s.amount %}<span>💰 ₱{{ s.amount|floatformat:0 }}</span>{% endif %}
+      <span>🎯 {{ s.slots }} slot{{ s.slots|pluralize }}</span>
+      <span>⏰ {{ s.days_remaining }} day{{ s.days_remaining|pluralize }} left</span>
+    </div>
+    <div style="display:flex;gap:0.5rem;margin-top:auto;">
+      <a href="{% url 'scholarship_detail' s.id %}" class="btn btn-outline btn-sm">Details</a>
+      {% if user.is_applicant and s.is_open %}
+      <a href="{% url 'apply' s.id %}" class="btn btn-gold btn-sm">Apply Now</a>
+      {% endif %}
+      {% if user.is_admin %}
+      <a href="{% url 'scholarship_edit' s.id %}" class="btn btn-primary btn-sm">Edit</a>
+      <a href="{% url 'scholarship_delete' s.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this scholarship?')">Delete</a>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <div class="empty-state" style="grid-column:1/-1;">
+    <div class="empty-icon">🎓</div>
+    <h3>No scholarships found</h3>
+    <p>{% if search or category %}Try adjusting your filters.{% else %}No scholarships are currently available.{% endif %}</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

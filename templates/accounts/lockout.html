@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Account Locked{% endblock %}
+{% block content %}
+<div style="max-width:480px;margin:4rem auto;text-align:center;">
+  <div style="font-size:4rem;margin-bottom:1rem;">🔒</div>
+  <h1 style="color:var(--danger);margin-bottom:0.75rem;">Account Temporarily Locked</h1>
+  <p style="color:var(--gray-500);margin-bottom:1.5rem;">
+    Too many failed login attempts detected. Your account has been temporarily locked for security.
+    Please try again in <strong>30 minutes</strong>.
+  </p>
+  <div class="alert alert-warning">⚠️ If this wasn't you, please contact your system administrator immediately.</div>
+  <a href="{% url 'login' %}" class="btn btn-primary" style="margin-top:1rem;">Back to Login</a>
+</div>
+{% endblock %}

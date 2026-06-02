@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ScholarPortal{% endblock %} | Regional Scholarship Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f1e3c;
+      --navy-light: #1a2f5a;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --cream: #f8f5ef;
+      --white: #ffffff;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-500: #6b7280;
+      --gray-700: #374151;
+      --success: #059669;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --info: #2563eb;
+      --radius: 8px;
+      --shadow: 0 4px 20px rgba(15,30,60,0.08);
+      --shadow-lg: 0 8px 40px rgba(15,30,60,0.14);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--navy);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    h1,h2,h3,h4 { font-family: 'DM Serif Display', serif; line-height: 1.2; }
+
+    /* NAVBAR */
+    .navbar {
+      background: var(--navy);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+    }
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+    }
+    .navbar-brand .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--gold);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    .navbar-brand span {
+      font-family: 'DM Serif Display', serif;
+      color: var(--white);
+      font-size: 1.15rem;
+      letter-spacing: 0.01em;
+    }
+    .navbar-brand span em { color: var(--gold); font-style: normal; }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-link {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .nav-link:hover, .nav-link.active { color: var(--white); background: rgba(255,255,255,0.1); }
+    .nav-badge {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--navy);
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border-radius: 20px;
+      margin-left: 0.3rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .btn-logout {
+      background: rgba(220,38,38,0.15);
+      color: #fca5a5;
+      border: 1px solid rgba(220,38,38,0.3);
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .btn-logout:hover { background: rgba(220,38,38,0.3); color: white; }
+
+    /* MAIN CONTENT */
+    .main-wrapper { display: flex; flex: 1; }
+    .sidebar {
+      width: 230px;
+      min-height: calc(100vh - 64px);
+      background: var(--navy-light);
+      padding: 1.5rem 1rem;
+      flex-shrink: 0;
+    }
+    .sidebar-section { margin-bottom: 1.5rem; }
+    .sidebar-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.35);
+      padding: 0 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      padding: 0.55rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.15rem;
+      transition: all 0.15s;
+    }
+    .sidebar-link:hover, .sidebar-link.active {
+      background: rgba(201,168,76,0.15);
+      color: var(--gold-light);
+    }
+    .sidebar-link .icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    /* PAGE CONTENT */
+    .page-content { flex: 1; padding: 2rem; max-width: calc(100vw - 230px); }
+    .page-header { margin-bottom: 2rem; }
+    .page-header h1 { font-size: 1.8rem; color: var(--navy); }
+    .page-header p { color: var(--gray-500); margin-top: 0.3rem; font-size: 0.925rem; }
+    .breadcrumb {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      margin-bottom: 0.5rem;
+    }
+    .breadcrumb a { color: var(--gold); text-decoration: none; }
+
+    /* CARDS */
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--gray-100);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .card-header h2 { font-size: 1.1rem; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--gold);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .stat-card.blue { border-left-color: var(--info); }
+    .stat-card.green { border-left-color: var(--success); }
+    .stat-card.red { border-left-color: var(--danger); }
+    .stat-card .stat-label { font-size: 0.8rem; color: var(--gray-500); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-card .stat-value { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--navy); line-height: 1; }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.25rem;
+      border-radius: 7px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-primary { background: var(--navy); color: var(--white); }
+    .btn-primary:hover { background: var(--navy-light); }
+    .btn-gold { background: var(--gold); color: var(--navy); }
+    .btn-gold:hover { background: var(--gold-light); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--navy);
+      color: var(--navy);
+    }
+    .btn-outline:hover { background: var(--navy); color: white; }
+    .btn-sm { padding: 0.35rem 0.8rem; font-size: 0.8rem; }
+
+    /* TABLES */
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--gray-200); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    thead th {
+      background: var(--navy);
+      color: rgba(255,255,255,0.85);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    tbody tr { border-bottom: 1px solid var(--gray-100); transition: background 0.1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--gray-50); }
+    td { padding: 0.85rem 1rem; color: var(--gray-700); vertical-align: middle; }
+
+    /* BADGES */
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-under_review { background: #dbeafe; color: #1e40af; }
+    .badge-approved { background: #d1fae5; color: #065f46; }
+    .badge-rejected { background: #fee2e2; color: #991b1b; }
+    .badge-applicant { background: #ede9fe; color: #5b21b6; }
+    .badge-reviewer { background: #dbeafe; color: #1e40af; }
+    .badge-admin { background: #fef3c7; color: #92400e; }
+    .badge-active { background: #d1fae5; color: #065f46; }
+    .badge-inactive { background: #fee2e2; color: #991b1b; }
+
+    /* FORMS */
+    .form-group { margin-bottom: 1.2rem; }
+    .form-label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--navy); }
+    .form-control {
+      width: 100%;
+      padding: 0.6rem 0.9rem;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 7px;
+      font-size: 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--navy);
+      background: var(--white);
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    .form-control:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.15); }
+    .form-control.error { border-color: var(--danger); }
+    .form-error { font-size: 0.8rem; color: var(--danger); margin-top: 0.3rem; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    /* MESSAGES */
+    .messages-container { padding: 0 2rem; margin-top: 1rem; }
+    .alert {
+      padding: 0.85rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .alert-error, .alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .alert-warning { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .alert-info { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+
+    /* FILTERS */
+    .filter-bar {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .filter-bar .form-control { width: auto; padding: 0.45rem 0.8rem; font-size: 0.85rem; }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--gray-500);
+    }
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state h3 { font-family: 'DM Serif Display', serif; color: var(--navy); margin-bottom: 0.5rem; }
+
+    /* FOOTER */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.8rem;
+    }
+    footer span { color: var(--gold); }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="{% url 'home' %}" class="navbar-brand">
+    <div class="logo-icon">🎓</div>
+    <span>Scholar<em>Portal</em></span>
+  </a>
+  <div class="nav-links">
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+      <a href="{% url 'scholarship_list' %}" class="nav-link">Scholarships</a>
+      {% if user.is_applicant %}
+        <a href="{% url 'my_applications' %}" class="nav-link">My Applications</a>
+      {% endif %}
+      {% if user.is_reviewer or user.is_admin %}
+        <a href="{% url 'review_list' %}" class="nav-link">Reviews</a>
+      {% endif %}
+      {% if user.is_admin %}
+        <a href="{% url 'manage_users' %}" class="nav-link">Users</a>
+        <a href="{% url 'audit_logs' %}" class="nav-link">Audit Logs</a>
+      {% endif %}
+      <a href="{% url 'profile' %}" class="nav-link">
+        {{ user.get_full_name|default:user.username }}
+        <span class="nav-badge">{{ user.role }}</span>
+      </a>
+      <a href="{% url 'logout' %}" class="btn-logout">Logout</a>
+    {% else %}
+      <a href="{% url 'login' %}" class="nav-link">Login</a>
+      <a href="{% url 'register' %}" class="btn-gold btn btn-sm">Register</a>
+    {% endif %}
+  </div>
+</nav>
+
+<!-- MESSAGES -->
+{% if messages %}
+<div class="messages-container">
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+      {% if message.tags == 'success' %}✅{% elif message.tags == 'error' or message.tags == 'danger' %}❌{% elif message.tags == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+      {{ message }}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- CONTENT -->
+<div class="main-wrapper">
+  {% if user.is_authenticated %}
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navigation</div>
+      <a href="{% url 'dashboard' %}" class="sidebar-link">
+        <span class="icon">🏠</span> Dashboard
+      </a>
+      <a href="{% url 'scholarship_list' %}" class="sidebar-link">
+        <span class="icon">🎓</span> Scholarships
+      </a>
+    </div>
+
+    {% if user.is_applicant %}
+    <div class="sidebar-section">
+      <div class="sidebar-label">My Account</div>
+      <a href="{% url 'my_applications' %}" class="sidebar-link">
+        <span class="icon">📝</span> My Applications
+      </a>
+      <a href="{% url 'profile' %}" class="sidebar-link">
+        <span class="icon">👤</span> Profile
+      </a>
+    </div>
+    {% endif %}
+
+    {% if user.is_reviewer or user.is_admin %}
+    <div class="sidebar-section">
+      <div class="sidebar-label">Review</div>
+      <a href="{% url 'review_list' %}" class="sidebar-link">
+        <span class="icon">🔍</span> Review Applications
+      </a>
+    </div>
+    {% endif %}
+
+    {% if user.is_admin %}
+    <div class="sidebar-section">
+      <div class="sidebar-label">Administration</div>
+      <a href="{% url 'scholarship_create' %}" class="sidebar-link">
+        <span class="icon">➕</span> Add Scholarship
+      </a>
+      <a href="{% url 'manage_users' %}" class="sidebar-link">
+        <span class="icon">👥</span> Manage Users
+      </a>
+      <a href="{% url 'audit_logs' %}" class="sidebar-link">
+        <span class="icon">📋</span> Audit Logs
+      </a>
+    </div>
+    {% endif %}
+  </aside>
+  {% endif %}
+
+  <main class="page-content {% if not user.is_authenticated %}no-sidebar{% endif %}">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+<footer>
+  <p>© 2025 Regional Scholarship Application Portal &mdash; Built with <span>♥</span> using Django</p>
+</footer>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>
