@@ -13,7 +13,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Passwords do not match."})
+            message = "The two entries do not match."
+            raise serializers.ValidationError({"password": message})
         if User.objects.filter(email=attrs['email']).exists():
             raise serializers.ValidationError({"email": "Email already registered."})
         return attrs
@@ -73,5 +74,6 @@ class ChangePasswordSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if attrs['new_password'] != attrs['new_password2']:
-            raise serializers.ValidationError({"new_password": "Passwords do not match."})
+            message = "The two entries do not match."
+            raise serializers.ValidationError({"new_password": message})
         return attrs

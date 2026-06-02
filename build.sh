@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
-# Build script for Render deployment
+# Build script for Railway deployment
 
 set -o errexit
 
-pip install -r requirements.txt
-
 python manage.py collectstatic --no-input
-python manage.py migrate
-python manage.py seed_data

@@ -20,7 +20,7 @@ class Command(BaseCommand):
             admin = User.objects.create_superuser(
                 username='admin',
                 email='admin@scholarportal.ph',
-                password='Admin@1234',
+                password='Admin@1234',  # nosec B106
                 first_name='System',
                 last_name='Administrator',
                 role='admin',
@@ -35,7 +35,7 @@ class Command(BaseCommand):
             User.objects.create_user(
                 username='reviewer1',
                 email='reviewer@scholarportal.ph',
-                password='Reviewer@1234',
+                password='Reviewer@1234',  # nosec B106
                 first_name='Maria',
                 last_name='Santos',
                 role='reviewer',
@@ -54,7 +54,7 @@ class Command(BaseCommand):
                 User.objects.create_user(
                     username=username,
                     email=email,
-                    password='Applicant@1234',
+                    password='Applicant@1234',  # nosec B106
                     first_name=fname,
                     last_name=lname,
                     role='applicant',

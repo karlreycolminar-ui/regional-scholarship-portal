@@ -8,7 +8,7 @@ A production-ready, secure enterprise web application built with **Django 4.2**,
 
 | Role | Responsibility |
 |------|---------------|
-| Lead Cloud & DevOps Engineer | Render/Railway deployment, Cloudinary, environment variables |
+| Lead Cloud & DevOps Engineer | Railway deployment, Cloudinary, environment variables |
 | API & IAM Engineer | DRF REST API, JWT auth, field-level masking |
 | Database Architect & RBAC Lead | Data models, Anti-IDOR logic, RBAC |
 | Frontend UI & Component Engineer | Dashboard templates, filters, forms |
@@ -47,6 +47,7 @@ cp env.example .env
 python manage.py migrate
 python manage.py seed_data
 ```
+`seed_data` creates demo accounts for local review. Do not run it automatically in production.
 
 ### 4. Run Server
 ```bash
@@ -182,19 +183,31 @@ When a review decision is saved, the application records the reviewer, timestamp
 
 ---
 
-## ☁️ Deployment (Render)
+## ☁️ Deployment (Railway)
 
-1. Push code to GitHub
-2. Create new **Web Service** on [render.com](https://render.com)
-3. Connect your GitHub repository
-4. Set environment variables:
+1. Push code to GitHub.
+2. Create a new project on [railway.com](https://railway.com).
+3. Add a **PostgreSQL** database service.
+4. Add a service from this GitHub repository.
+5. Set environment variables on the Django service:
    - `SECRET_KEY` → generate a strong random key
    - `DEBUG` → `False`
-   - `DATABASE_URL` → Render PostgreSQL URL
-   - `ALLOWED_HOSTS` → `your-app.onrender.com`
-   - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
-5. Set **Build Command**: `bash build.sh`
-6. Set **Start Command**: `gunicorn scholarship_portal.wsgi`
+   - `DATABASE_URL` → Railway PostgreSQL connection URL
+   - `ALLOWED_HOSTS` → optional comma-separated custom domains
+   - `CSRF_TRUSTED_ORIGINS` → optional comma-separated `https://...` origins for custom domains
+   - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` → optional production media storage
+
+Railway reads `railway.json` from the repo:
+
+| Setting | Command |
+|---------|---------|
+| Build | `bash build.sh` |
+| Pre-deploy | `python manage.py migrate` |
+| Start | `gunicorn scholarship_portal.wsgi:application --bind 0.0.0.0:$PORT --log-file -` |
+
+The app also accepts Railway's `RAILWAY_PUBLIC_DOMAIN` automatically in `ALLOWED_HOSTS`.
+In production, Django trusts Railway's forwarded HTTPS header so secure redirects work correctly behind Railway's proxy.
+Create production users through the Django admin or a one-time management command after deployment; demo credentials are local-only.
 
 ---
 
