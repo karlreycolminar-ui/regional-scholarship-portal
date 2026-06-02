@@ -206,6 +206,7 @@ Only add these optional variables when needed:
 | `ALLOWED_HOSTS` | Custom domains only | `scholarship.example.com` |
 | `CSRF_TRUSTED_ORIGINS` | Custom domains only | `https://scholarship.example.com` |
 | `CORS_ALLOWED_ORIGINS` | Separate frontend domain only | `https://frontend.example.com` |
+| `AXES_ENABLED` | Enable brute-force protection after confirming Axes migrations ran | `True` |
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary media uploads | `your-cloud-name` |
 | `CLOUDINARY_API_KEY` | Cloudinary media uploads | `your-api-key` |
 | `CLOUDINARY_API_SECRET` | Cloudinary media uploads | `${{ secret() }}` |

@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
-    'axes',
     'honeypot',
 
     # Local apps
@@ -45,6 +44,10 @@ INSTALLED_APPS = [
     'applications',
     'audits',
 ]
+
+AXES_ENABLED = os.environ.get('AXES_ENABLED', 'False').strip().lower() in {'1', 'true', 'yes', 'on'}
+if AXES_ENABLED:
+    INSTALLED_APPS.append('axes')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -56,8 +59,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'axes.middleware.AxesMiddleware',
 ]
+if AXES_ENABLED:
+    MIDDLEWARE.append('axes.middleware.AxesMiddleware')
 
 ROOT_URLCONF = 'scholarship_portal.urls'
 
@@ -161,9 +165,10 @@ AXES_LOCKOUT_CALLABLE = 'accounts.views.lockout_response'
 AXES_RESET_ON_SUCCESS = True
 
 AUTHENTICATION_BACKENDS = [
-    'axes.backends.AxesStandaloneBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+if AXES_ENABLED:
+    AUTHENTICATION_BACKENDS.insert(0, 'axes.backends.AxesStandaloneBackend')
 
 # CORS
 CORS_ALLOWED_ORIGINS = [
