@@ -20,6 +20,8 @@ ALLOWED_HOSTS = [host.strip() for host in os.environ.get('ALLOWED_HOSTS', 'local
 RAILWAY_PUBLIC_DOMAIN = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
 if RAILWAY_PUBLIC_DOMAIN:
     ALLOWED_HOSTS.append(RAILWAY_PUBLIC_DOMAIN)
+if os.environ.get('RAILWAY_ENVIRONMENT_NAME'):
+    ALLOWED_HOSTS.append('.up.railway.app')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -181,6 +183,8 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 if RAILWAY_PUBLIC_DOMAIN:
     CSRF_TRUSTED_ORIGINS.append(f'https://{RAILWAY_PUBLIC_DOMAIN}')
+if os.environ.get('RAILWAY_ENVIRONMENT_NAME'):
+    CSRF_TRUSTED_ORIGINS.append('https://*.up.railway.app')
 
 # Honeypot
 HONEYPOT_FIELD_NAME = 'phonenumber'
@@ -205,3 +209,24 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 # File upload
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 ALLOWED_DOCUMENT_TYPES = ['application/pdf', 'image/jpeg', 'image/png']
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}

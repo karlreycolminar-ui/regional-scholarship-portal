@@ -1,4 +1,11 @@
+import logging
+
+from django.db import DatabaseError, OperationalError, ProgrammingError
+
 from .models import AuditLog
+
+
+logger = logging.getLogger(__name__)
 
 
 def log_action(user, action_type, description, request=None):
@@ -13,9 +20,12 @@ def log_action(user, action_type, description, request=None):
             ip = x_forwarded.split(',')[0].strip()
         else:
             ip = request.META.get('REMOTE_ADDR')
-    AuditLog.objects.create(
-        user=user,
-        action_type=action_type,
-        description=description,
-        ip_address=ip
-    )
+    try:
+        AuditLog.objects.create(
+            user=user,
+            action_type=action_type,
+            description=description,
+            ip_address=ip
+        )
+    except (DatabaseError, OperationalError, ProgrammingError):
+        logger.exception('Audit log write failed for action %s', action_type)
