@@ -189,13 +189,28 @@ When a review decision is saved, the application records the reviewer, timestamp
 2. Create a new project on [railway.com](https://railway.com).
 3. Add a **PostgreSQL** database service.
 4. Add a service from this GitHub repository.
-5. Set environment variables on the Django service:
-   - `SECRET_KEY` → generate a strong random key
-   - `DEBUG` → `False`
-   - `DATABASE_URL` → Railway PostgreSQL connection URL
-   - `ALLOWED_HOSTS` → optional comma-separated custom domains
-   - `CSRF_TRUSTED_ORIGINS` → optional comma-separated `https://...` origins for custom domains
-   - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` → optional production media storage
+5. Set these required environment variables on the Django service:
+
+| Variable | Railway value |
+|----------|---------------|
+| `SECRET_KEY` | `${{ secret(50) }}` |
+| `DEBUG` | `False` |
+| `DATABASE_URL` | `${{ Postgres.DATABASE_URL }}` |
+
+Railway provides `RAILWAY_PUBLIC_DOMAIN` automatically after you generate a public domain for the service. The app uses it automatically for `ALLOWED_HOSTS` and CSRF.
+
+Only add these optional variables when needed:
+
+| Variable | When to set it | Example |
+|----------|----------------|---------|
+| `ALLOWED_HOSTS` | Custom domains only | `scholarship.example.com` |
+| `CSRF_TRUSTED_ORIGINS` | Custom domains only | `https://scholarship.example.com` |
+| `CORS_ALLOWED_ORIGINS` | Separate frontend domain only | `https://frontend.example.com` |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary media uploads | `your-cloud-name` |
+| `CLOUDINARY_API_KEY` | Cloudinary media uploads | `your-api-key` |
+| `CLOUDINARY_API_SECRET` | Cloudinary media uploads | `${{ secret() }}` |
+
+Do not manually create `RAILWAY_PUBLIC_DOMAIN` unless Railway did not add it after public networking was enabled.
 
 Railway reads `railway.json` from the repo:
 
