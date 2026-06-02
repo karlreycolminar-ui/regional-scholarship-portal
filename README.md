@@ -193,7 +193,7 @@ When a review decision is saved, the application records the reviewer, timestamp
    - `DATABASE_URL` → Render PostgreSQL URL
    - `ALLOWED_HOSTS` → `your-app.onrender.com`
    - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
-5. Set **Build Command**: `./build.sh`
+5. Set **Build Command**: `bash build.sh`
 6. Set **Start Command**: `gunicorn scholarship_portal.wsgi`
 
 ---
