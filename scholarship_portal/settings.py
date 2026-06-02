@@ -13,6 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-this-in-production-immediately')
+APP_VERSION = 'login-fix-20260603'
 
 DEBUG = os.environ.get('DEBUG', 'True').strip().lower() in {'1', 'true', 'yes', 'on'}
 
