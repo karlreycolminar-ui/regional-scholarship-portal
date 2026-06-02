@@ -20,8 +20,8 @@ A production-ready, secure enterprise web application built with **Django 4.2**,
 
 ### 1. Clone & Setup
 ```bash
-git clone <your-repo-url>
-cd Scholarship
+git clone https://github.com/karlreycolminar-ui/regional-scholarship-portal.git
+cd regional-scholarship-portal
 
 python -m venv venv
 # Windows:
@@ -34,7 +34,11 @@ pip install -r requirements.txt
 
 ### 2. Configure Environment
 ```bash
-cp .env.example .env
+# Windows:
+copy env.example .env
+# Mac/Linux:
+cp env.example .env
+
 # Edit .env with your values (SECRET_KEY at minimum)
 ```
 
@@ -84,15 +88,39 @@ scholarship_portal/
 │           └── seed_data.py
 ├── scholarships/           # Scholarship listings
 ├── applications/           # Application submission & review
+│   ├── models.py           # Applications, review fields, documents
+│   ├── views.py            # Apply, detail, withdraw, reviewer workflows
+│   ├── forms.py            # Application, document upload, review forms
+│   ├── api_views.py        # DRF endpoints for applications and reviews
+│   └── urls.py             # Template view URLs
 ├── audits/                 # Audit logging system
 └── templates/              # HTML templates
     ├── base.html
     ├── accounts/
     ├── scholarships/
     ├── applications/
+    │   ├── apply.html
+    │   ├── detail.html
+    │   ├── my_applications.html
+    │   ├── review_list.html
+    │   └── review.html
     ├── dashboard/
     └── audits/
 ```
+
+---
+
+## 📝 Reviewer Workflow
+
+Reviewers and admins can manage applications from `/applications/review/`.
+
+| Page | Purpose |
+|------|---------|
+| `/applications/review/` | Filter applications by status or scholarship |
+| `/applications/review/<id>/` | Review one application, inspect applicant details and documents, then mark as Under Review, Approved, or Rejected |
+| `/applications/<id>/` | Read-only application detail page with timeline and review notes |
+
+When a review decision is saved, the application records the reviewer, timestamp, status, notes, and an audit log entry.
 
 ---
 
@@ -185,6 +213,8 @@ pip-audit -r requirements.txt -o pip_audit_report.txt
 # Django security check
 python manage.py check --deploy
 ```
+
+Generated reports such as `bandit_report.txt` and `pip_audit_report.txt` are ignored by Git.
 
 ---
 
